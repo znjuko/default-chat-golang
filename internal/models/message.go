@@ -5,4 +5,5 @@ type Message struct {
 	Text        *string `json:"txt,omitempty"`
 	ChatName    *string `json:"chatName,omitempty"`
 	ChatId      *string `json:"chatId,omitempty"`
+	Emojies     []Emoji `json:"emojies,omitempty"`
 }

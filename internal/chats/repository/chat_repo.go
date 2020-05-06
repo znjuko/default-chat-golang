@@ -87,7 +87,7 @@ func (Chat ChatRepoRealisation) GetChat(chatId int) (models.Chat, []models.Messa
 
 func (Chat ChatRepoRealisation) GetChats(userId int) ([]models.Chat, error) {
 
-	row, err := Chat.database.Query("SELECT C.name , C.last_msg_id , C.last_msg_log , C.last_msg_txt FROM chats C INNER JOIN chat_user CU ON (C.ch_id=CU.ch_id) WHERE CU.u_id = $1 ORDER BY C.last_msg_id DESC", userId)
+	row, err := Chat.database.Query("SELECT C.ch_id,C.name , C.last_msg_id , C.last_msg_log , C.last_msg_txt FROM chats C INNER JOIN chat_user CU ON (C.ch_id=CU.ch_id) WHERE CU.u_id = $1 ORDER BY C.last_msg_id DESC", userId)
 	defer func() {
 		if row != nil {
 			row.Close()
@@ -104,7 +104,7 @@ func (Chat ChatRepoRealisation) GetChats(userId int) ([]models.Chat, error) {
 		chat := new(models.Chat)
 		msgId := 0
 
-		err = row.Scan(&chat.ChatName, &msgId, &chat.ChatLastAuthorLogin, &chat.ChatLastMessage)
+		err = row.Scan(&chat.ChatId,&chat.ChatName, &msgId, &chat.ChatLastAuthorLogin, &chat.ChatLastMessage)
 
 		if err != nil {
 			return nil, err

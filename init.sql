@@ -37,7 +37,7 @@ CREATE UNIQUE INDEX idx_un_ch ON chat_user(ch_id,u_id);
 CREATE TABLE emoji
 (
     em_id     SERIAL PRIMARY KEY ,
-    main_word TEXT,
+    main_word TEXT UNIQUE ,
     slug      TEXT
 );
 

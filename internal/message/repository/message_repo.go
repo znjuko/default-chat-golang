@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"main/internal/models"
+	"strings"
 )
 
 type MessageRepositoryRealisation struct {
@@ -14,6 +15,20 @@ func NewMessageRepositoryRealisation(addr, pass string, db *sql.DB) MessageRepos
 
 
 	return MessageRepositoryRealisation{messageDB: db}
+}
+
+func MessageParser(messageTxt string) []string {
+
+	emojies := make([]string,0)
+	letters := strings.Fields(messageTxt)
+
+	for _ , value := range letters {
+		if value[:1] == ":" && value[len(value)-1:] == ":" {
+			emojies = append(emojies,value)
+		}
+	}
+
+	return emojies
 }
 
 func (MR MessageRepositoryRealisation) AddNewMessage(author int, message models.Message) error {
@@ -84,6 +99,27 @@ func (MR MessageRepositoryRealisation) ReceiveNewMessages(userId int) ([]models.
 		}
 
 		MR.messageDB.Exec("DELETE FROM newmessages WHERE msg_id = $1 AND u_id = $2", msgId, userId)
+
+		emojies := MessageParser(*msg.Text)
+
+		if len(emojies) != 0 {
+			msg.Emojies = make([]models.Emoji,0)
+			for _ , value := range emojies {
+
+				row := MR.messageDB.QueryRow("SELECT slug FROM emoji WHERE main_word = $1" , value)
+				var emojiSlug *string
+
+				err := row.Scan(&emojiSlug)
+
+				if err == nil {
+					msg.Emojies = append(msg.Emojies,models.Emoji{
+						Url:    &value,
+						Phrase: emojiSlug,
+					})
+				}
+
+			}
+		}
 
 		msgsArray = append(msgsArray, *msg)
 

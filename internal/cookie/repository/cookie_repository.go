@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/go-redis/redis"
 	"strconv"
 	"time"
@@ -21,6 +22,8 @@ func NewCookieRepositoryRealisation(addr, pass string) CookieRepositoryRealisati
 }
 
 func (cookR CookieRepositoryRealisation) AddCookie(id int, cookieValue string, exprTime time.Duration) error {
+
+	fmt.Println(id, cookieValue)
 
 	err := cookR.sessionDB.Set(cookieValue, id, exprTime).Err()
 

@@ -60,16 +60,15 @@ func (CD ChatsDelivery) CreateChat(rwContext echo.Context) error {
 
 	CD.logger.Info(
 		zap.String("ID", uId),
-		zap.Int("ANSWER STATUS", http.StatusOK),
+		zap.Int("ANSWER STATUS", http.StatusCreated),
 	)
 
-	return rwContext.NoContent(http.StatusOK)
+	return rwContext.NoContent(http.StatusCreated)
 }
-
 
 func (CD ChatsDelivery) GetChatMessages(rwContext echo.Context) error {
 	uId := rwContext.Get("REQUEST_ID").(string)
-	chatId , _  := strconv.Atoi(rwContext.Param("id"))
+	chatId, _ := strconv.Atoi(rwContext.Param("id"))
 
 	userId := rwContext.Get("user_id").(int)
 

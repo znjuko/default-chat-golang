@@ -16,17 +16,21 @@ import (
 	sh "main/internal/socket/delivery"
 	th "main/internal/socket_token/delivery"
 	uh "main/internal/user/delivery"
+	eh "main/internal/emojies/delivery"
 
 	cr "main/internal/chats/repository"
 	mr "main/internal/message/repository"
 	tr "main/internal/socket_token/repository"
 	ur "main/internal/user/repository"
 	sr "main/internal/socket/repository"
+	er "main/internal/emojies/repository"
 
 	cu "main/internal/chats/usecase"
 	su "main/internal/socket/usecase"
 	tu "main/internal/socket_token/usecase"
 	uu "main/internal/user/usecase"
+	eu "main/internal/emojies/usecase"
+
 )
 
 type RequestHandlers struct {
@@ -34,6 +38,7 @@ type RequestHandlers struct {
 	chatHandler   ch.ChatsDelivery
 	tokenHandler  th.TokenDelivery
 	socketHandler sh.SocketDelivery
+	emojiHandler eh.ChatsDelivery
 }
 
 func InitializeHandlers(db *sql.DB, auth cookie.CookieRepositoryRealisation, logger *zap.SugaredLogger) RequestHandlers {
@@ -42,12 +47,14 @@ func InitializeHandlers(db *sql.DB, auth cookie.CookieRepositoryRealisation, log
 	redisPort := os.Getenv("REDIS_PORT")
 
 	userR := ur.NewUserRepositoryRealisation(db)
+	emojiR := er.NewEmojiUseRealisation(db)
 	chatR := cr.NewChatRepoRealistaion(db)
 	onlineR := sr.NewOnlineRepoRealosation(db)
 	msgR := mr.NewMessageRepositoryRealisation("", "", db)
 	tokenR := tr.NewTokenRepositoryRealisation(redisPort, redisPas)
 
 	userU := uu.NewUserUseCaseRealisation(userR, auth)
+	emojiU := eu.NewEmojiUseRealisation(emojiR)
 	chatU := cu.NewChatUseCaseRealisation(chatR)
 	tokenU := tu.NewTokenUseCaseRealisation(tokenR)
 	socketU := su.NewSocketUseCaseRealisation(msgR, tokenR, onlineR)
@@ -56,12 +63,14 @@ func InitializeHandlers(db *sql.DB, auth cookie.CookieRepositoryRealisation, log
 	chatH := ch.NewChatsDelivery(logger, chatU)
 	tokenH := th.NewTokenDelivery(logger, tokenU)
 	socketH := sh.NewSocketDelivery(logger, socketU)
+	emojiH := eh.NewChatsDelivery(logger,emojiU)
 
 	return RequestHandlers{
 		userHandler:   userH,
 		chatHandler:   chatH,
 		tokenHandler:  tokenH,
 		socketHandler: socketH,
+		emojiHandler: emojiH,
 	}
 }
 
@@ -106,6 +115,7 @@ func main() {
 	reqHandlers.socketHandler.InitHandlers(server)
 	reqHandlers.tokenHandler.InitHandlers(server)
 	reqHandlers.userHandler.InitHandlers(server)
+	reqHandlers.emojiHandler.InitHandlers(server)
 
 	midHandler := mware.NewMiddlewareHandler(logger, auth)
 	midHandler.SetMiddleware(server)

@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"fmt"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
 	"main/internal/models"
@@ -34,7 +35,7 @@ func (userD UserDeliveryRealisation) Login(rwContext echo.Context) error {
 		return rwContext.NoContent(http.StatusConflict)
 	}
 
-	exprTime := 12 * time.Hour
+
 
 	cookieValue, err := userD.userLogic.Login(*userAuthData)
 
@@ -44,8 +45,6 @@ func (userD UserDeliveryRealisation) Login(rwContext echo.Context) error {
 			zap.String("ERROR", err.Error()),
 			zap.Int("ANSWER STATUS", http.StatusUnauthorized),
 		)
-
-
 		return rwContext.JSON(http.StatusUnauthorized, models.JsonStruct{Err: err.Error()})
 	}
 
@@ -54,12 +53,16 @@ func (userD UserDeliveryRealisation) Login(rwContext echo.Context) error {
 		zap.Int("ANSWER STATUS", http.StatusOK),
 	)
 
+	exprTime := 12 * time.Hour
 	cookie := http.Cookie{
 		Name:    "session_id",
 		Value:   cookieValue,
 		Expires: time.Now().Add(exprTime),
 	}
 	rwContext.SetCookie(&cookie)
+
+	fmt.Println(rwContext.Cookie("session_id"))
+	fmt.Println(cookie)
 
 	return rwContext.NoContent(http.StatusOK)
 }
