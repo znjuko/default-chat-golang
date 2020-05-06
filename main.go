@@ -21,6 +21,7 @@ import (
 	mr "main/internal/message/repository"
 	tr "main/internal/socket_token/repository"
 	ur "main/internal/user/repository"
+	sr "main/internal/socket/repository"
 
 	cu "main/internal/chats/usecase"
 	su "main/internal/socket/usecase"
@@ -42,13 +43,14 @@ func InitializeHandlers(db *sql.DB, auth cookie.CookieRepositoryRealisation, log
 
 	userR := ur.NewUserRepositoryRealisation(db)
 	chatR := cr.NewChatRepoRealistaion(db)
+	onlineR := sr.NewOnlineRepoRealosation(db)
 	msgR := mr.NewMessageRepositoryRealisation("", "", db)
 	tokenR := tr.NewTokenRepositoryRealisation(redisPort, redisPas)
 
 	userU := uu.NewUserUseCaseRealisation(userR, auth)
 	chatU := cu.NewChatUseCaseRealisation(chatR)
 	tokenU := tu.NewTokenUseCaseRealisation(tokenR)
-	socketU := su.NewSocketUseCaseRealisation(msgR, tokenR)
+	socketU := su.NewSocketUseCaseRealisation(msgR, tokenR, onlineR)
 
 	userH := uh.NewUserDelivery(logger, userU)
 	chatH := ch.NewChatsDelivery(logger, chatU)

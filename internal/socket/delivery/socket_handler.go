@@ -67,5 +67,5 @@ func (SD SocketDelivery) UpgradeToSocket(rwContext echo.Context) error {
 }
 
 func (SD SocketDelivery) InitHandlers(server *echo.Echo) {
-	server.GET("/api/v1/ws/:token", SD.UpgradeToSocket)
+	server.GET("/ws/:token", SD.UpgradeToSocket)
 }

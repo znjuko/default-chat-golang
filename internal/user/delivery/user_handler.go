@@ -151,8 +151,8 @@ func NewUserDelivery(log *zap.SugaredLogger, userRealisation users.UserUseCase) 
 }
 
 func (userD UserDeliveryRealisation) InitHandlers(server *echo.Echo) {
-	server.POST("/api/v1/login", userD.Login)
-	server.POST("/api/v1/registration", userD.Register)
+	server.POST("/login", userD.Login)
+	server.POST("/registration", userD.Register)
 
-	server.DELETE("/api/v1/login", userD.Logout)
+	server.DELETE("/login", userD.Logout)
 }

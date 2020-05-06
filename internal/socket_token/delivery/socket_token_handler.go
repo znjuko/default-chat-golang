@@ -54,5 +54,5 @@ func (TD TokenDelivery) TokenSetup(rwContext echo.Context) error {
 }
 
 func (TD TokenDelivery) InitHandlers(server *echo.Echo) {
-	server.GET("/api/v1/ws", TD.TokenSetup)
+	server.GET("/ws", TD.TokenSetup)
 }

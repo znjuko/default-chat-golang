@@ -34,6 +34,10 @@ func (CR ConnReceiver) StartRecieving() {
 
 			if ev&netpoll.EventReadHup != 0 {
 				CR.connection.Close()
+				CR.workPool.Schedule(
+					func() {
+						CR.handler.DiscardOnline()
+					})
 				atomic.SwapInt32(&CR.closedStatus, 1)
 				return
 			}

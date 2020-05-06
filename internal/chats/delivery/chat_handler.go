@@ -137,7 +137,7 @@ func (CD ChatsDelivery) GetAllChats(rwContext echo.Context) error {
 }
 
 func (CD ChatsDelivery) InitHandlers(server *echo.Echo) {
-	server.POST("/api/v1/chats", CD.CreateChat)
-	//server.GET("/api/v1/chats/:id", CD.GetChatMessages)
-	server.GET("/api/v1/chats", CD.GetAllChats)
+	server.POST("/chats", CD.CreateChat)
+	server.GET("/chats/:id", CD.GetChatMessages)
+	server.GET("/chats", CD.GetAllChats)
 }
