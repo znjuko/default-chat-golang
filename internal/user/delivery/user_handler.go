@@ -1,7 +1,6 @@
 package delivery
 
 import (
-	"fmt"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
 	"main/internal/models"
@@ -60,9 +59,6 @@ func (userD UserDeliveryRealisation) Login(rwContext echo.Context) error {
 		Expires: time.Now().Add(exprTime),
 	}
 	rwContext.SetCookie(&cookie)
-
-	fmt.Println(rwContext.Cookie("session_id"))
-	fmt.Println(cookie)
 
 	return rwContext.NoContent(http.StatusOK)
 }

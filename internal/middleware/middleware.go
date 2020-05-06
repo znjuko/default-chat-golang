@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/labstack/echo"
 	uuid "github.com/satori/go.uuid"
 	"go.uber.org/zap"
@@ -117,11 +116,9 @@ func (mh MiddlewareHandler) CheckAuthentication() echo.MiddlewareFunc {
 
 			if err != nil {
 				userId = -1
-				//cookie = &http.Cookie{Expires: time.Now().AddDate(0, 0, -1)}
-				//rwContext.SetCookie(cookie)
+				cookie = &http.Cookie{Expires: time.Now().AddDate(0, 0, -1)}
+				rwContext.SetCookie(cookie)
 			}
-
-			fmt.Println(err)
 
 			rwContext.Set("user_id", int(userId))
 			return next(rwContext)
