@@ -13,9 +13,9 @@ func NewChatRepoRealistaion(db *sql.DB) ChatRepoRealisation {
 	return ChatRepoRealisation{database: db}
 }
 
-func (Chat ChatRepoRealisation) GetOnline() ([]models.OnlineUsers, error) {
+func (Chat ChatRepoRealisation) GetOnline(userId int) ([]models.OnlineUsers, error) {
 
-	row, err := Chat.database.Query("SELECT U.u_id , U.login FROM users U INNER JOIN online O ON (O.u_id=U.u_id)")
+	row, err := Chat.database.Query("SELECT U.u_id , U.login FROM users U INNER JOIN online O ON (O.u_id=U.u_id) WHERE U.u_id != $2", userId)
 
 	defer func() {
 		if row != nil {

@@ -26,7 +26,7 @@ func (Chat ChatUseCaseRealisation) GetChatsAndOnlineUsers(userId int) (models.Ch
 	var err error
 	chAndOnl := new(models.ChatAndOnline)
 
-	chAndOnl.Online, err = Chat.chatDB.GetOnline()
+	chAndOnl.Online, err = Chat.chatDB.GetOnline(userId)
 
 	if err != nil {
 		return *chAndOnl, err
