@@ -1,8 +1,8 @@
 package models
 
 type Chat struct {
-	ChatId              *string `json:"chatId,omitempty"`
-	ChatName            *string `json:"chatName,omitempty"`
-	ChatLastMessage     *string `json:"chatMsg,omitempty"`
-	ChatLastAuthorLogin *string `json:"chatAuthor,omitempty"`
+	ChatId              *string `json:"chatId"`
+	ChatName            *string `json:"chatName"`
+	ChatLastMessage     *string `json:"chatMsg"`
+	ChatLastAuthorLogin *string `json:"chatAuthor"`
 }

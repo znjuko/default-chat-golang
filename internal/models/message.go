@@ -1,9 +1,9 @@
 package models
 
 type Message struct {
-	AuthorLogin *string `json:"author,omitempty"`
-	Text        *string `json:"txt,omitempty"`
-	ChatName    *string `json:"chatName,omitempty"`
-	ChatId      *string `json:"chatId,omitempty"`
-	Emojies     []Emoji `json:"emojies,omitempty"`
+	AuthorLogin *string `json:"author"`
+	Text        *string `json:"txt"`
+	ChatName    *string `json:"chatName"`
+	ChatId      *string `json:"chatId"`
+	Emojies     []Emoji `json:"emojies"`
 }

@@ -1,6 +1,6 @@
 package models
 
 type OnlineUsers struct {
-	Login  *string `json:"login,omitempty"`
-	UserId *int    `json:"id,omitempty"`
+	Login  *string `json:"login"`
+	UserId *int    `json:"id"`
 }

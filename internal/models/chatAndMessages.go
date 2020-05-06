@@ -1,6 +1,6 @@
 package models
 
 type ChatAndMsgs struct {
-	ChatInfo Chat      `json:"chatInfo,omitempty"`
+	ChatInfo Chat      `json:"chatInfo"`
 	Messages []Message `json:"messages"`
 }
