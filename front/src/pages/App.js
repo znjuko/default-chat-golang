@@ -7,6 +7,7 @@ import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
 import Login from './Login';
 import Register from './Register';
 import Messanger from './Messanger';
+import Messages from './Messages';
 
 class App extends React.Component {
 	render() {
@@ -26,7 +27,7 @@ class App extends React.Component {
 					<Route
 						history={history}
 						path='/chats'
-						component={Messanger}
+						component={ChatsRout}
 					/>
 					<Redirect from='/' to='/login' />
 				</Switch>
@@ -53,3 +54,22 @@ class App extends React.Component {
 }
 
 export default withRouter(App);
+
+function ChatsRout(props) {
+	const { history } = props;
+	return (
+		<Switch>
+			<Route
+				history={history}
+				exact
+				path='/chats'
+				component={Messanger}
+			/>
+			<Route
+				history={history}
+				path='/chats/:chatId'
+				component={Messages}
+			/>
+		</Switch>
+	);
+}

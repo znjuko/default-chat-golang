@@ -9,25 +9,8 @@ export default class Messanger extends React.Component {
 		super(props);
 		this.state = {
 			isLoading: true,
-			chats: [
-				{
-					chatName: 'chat',
-					chatMsg: 'asflasgflksdgaljhsglkdsaglksdglka',
-					chatAuthor: 'Viici',
-				},
-				{
-					chatName: 'chat',
-					chatMsg: 'asflasgflksdgaljhsglkdsaglksdglka',
-					chatAuthor: 'Viici',
-				},
-			],
-			online: [
-				{ login: 'Hello', id: 1 },
-				{ login: 'Hello', id: 2 },
-				{ login: 'Hello', id: 3 },
-				{ login: 'Hello', id: 4 },
-				{ login: 'Hello', id: 5 },
-			],
+			chats: [],
+			online: [],
 		};
 	}
 

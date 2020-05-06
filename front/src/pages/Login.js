@@ -59,7 +59,9 @@ class Login extends React.Component {
 							Войти
 						</button>
 						<Link to='registration' activeClassName='active'>
-							<button type='button' class='btn btn-outline-info'>
+							<button
+								type='button'
+								className='btn btn-outline-info'>
 								Регистрация
 							</button>
 						</Link>
@@ -102,10 +104,10 @@ class Login extends React.Component {
 	};
 
 	errorClass(error) {
-		return error.length == 0 ? '' : 'border border-danger';
+		return error.length === 0 ? '' : 'border border-danger';
 	}
 	errorHidClass(error) {
-		return error.length == 0 ? 'invisible' : 'visible';
+		return error.length === 0 ? 'invisible' : 'visible';
 	}
 }
 
