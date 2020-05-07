@@ -14,7 +14,7 @@ func NewEmojiUseRealisation(db *sql.DB) EmojiRepoRealisation {
 }
 
 func (Emoji EmojiRepoRealisation) CreateEmoji(emoji models.Emoji) error {
-	_, err := Emoji.database.Exec("INSERT INTO emoji (main_word,slug) VALUES($1,$2)", *emoji.Phrase, *emoji.Url)
+	_, err := Emoji.database.Exec("INSERT INTO emoji (main_word,slug) VALUES($1,$2)", ":"+ *emoji.Phrase + ":", *emoji.Url)
 
 	return err
 }
