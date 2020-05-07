@@ -164,10 +164,6 @@ func (Chat ChatRepoRealisation) CreateChat(chatName string, chatUsers []int) err
 
 func (Chat ChatRepoRealisation) SendMessageToAll(msg models.Message, userId int) error {
 
-
-
-	fmt.Println("HERE")
-
 	row, err := Chat.database.Query("SELECT u_id FROM users")
 
 	defer func() {
@@ -176,14 +172,18 @@ func (Chat ChatRepoRealisation) SendMessageToAll(msg models.Message, userId int)
 		}
 	}()
 
+
+
 	if err != nil {
 		fmt.Println("select users")
 		return err
 	}
 
+
 	chatId := 0
 	infoRow := Chat.database.QueryRow("INSERT INTO chats (name) VALUES($1) RETURNING ch_id", "ATTENTION")
 	err = infoRow.Scan(&chatId)
+
 
 	if err != nil {
 		fmt.Println("select ch_id")
@@ -192,8 +192,8 @@ func (Chat ChatRepoRealisation) SendMessageToAll(msg models.Message, userId int)
 	}
 
 	msgId := 0
-	infoRow = Chat.database.QueryRow("INSERT INTO messages (u_id,ch_id,text) VALUES($1,$2,$3) RETURNING msg_id", userId, chatId, *msg.Text)
-	err = infoRow.Scan(&msgId)
+	mrRow := Chat.database.QueryRow("INSERT INTO messages (u_id,ch_id,text) VALUES($1,$2,$3) RETURNING msg_id", userId, chatId, *msg.Text)
+	err = mrRow.Scan(&msgId)
 
 	if err != nil {
 		fmt.Println("select msg_id")
@@ -222,22 +222,6 @@ func (Chat ChatRepoRealisation) SendMessageToAll(msg models.Message, userId int)
 
 				return err
 			}
-		}
-
-		_, err = Chat.database.Exec("INSERT INTO chat_user (ch_id,u_id) VALUES($1,$2)", chatId, userId)
-
-		if err != nil {
-			fmt.Println("insert into chat_user main user")
-
-			return err
-		}
-
-		_, err = Chat.database.Exec("INSERT INTO newmessages (msg_id,u_id) VALUES($1,$2)", msgId, userId)
-
-		if err != nil {
-			fmt.Println("insert nm chat_user")
-
-			return err
 		}
 	}
 
