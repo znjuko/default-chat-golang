@@ -111,8 +111,8 @@ func (MR MessageRepositoryRealisation) ReceiveNewMessages(userId int) ([]models.
 
 				if err == nil {
 					msg.Emojies = append(msg.Emojies, models.Emoji{
-						Url:    &value,
-						Phrase: emojiSlug,
+						Url:    emojiSlug,
+						Phrase: &value,
 					})
 				}
 
