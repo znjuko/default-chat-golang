@@ -92,8 +92,8 @@ func (Chat ChatRepoRealisation) GetChat(chatId int) (models.Chat, []models.Messa
 
 				if err == nil {
 					msg.Emojies = append(msg.Emojies, models.Emoji{
-						Url:    &value,
-						Phrase: emojiSlug,
+						Url:    emojiSlug,
+						Phrase: &value,
 					})
 				}
 
