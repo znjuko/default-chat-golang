@@ -201,42 +201,44 @@ func (Chat ChatRepoRealisation) SendMessageToAll(msg models.Message, userId int)
 		return err
 	}
 
-	for row.Next() {
+	if row != nil {
+		for row.Next() {
 
-		userChatId := 0
-		row.Scan(&userChatId)
+			userChatId := 0
+			row.Scan(&userChatId)
 
-		_, err = Chat.database.Exec("INSERT INTO chat_user (ch_id,u_id) VALUES($1,$2)", chatId, userChatId)
+			_, err = Chat.database.Exec("INSERT INTO chat_user (ch_id,u_id) VALUES($1,$2)", chatId, userChatId)
+
+			if err != nil {
+				fmt.Println("insert into chat_user")
+
+				return err
+			}
+
+			_, err = Chat.database.Exec("INSERT INTO newmessages (msg_id,u_id) VALUES($1,$2)", msgId, userChatId)
+
+			if err != nil {
+				fmt.Println("insert into nmsg")
+
+				return err
+			}
+		}
+
+		_, err = Chat.database.Exec("INSERT INTO chat_user (ch_id,u_id) VALUES($1,$2)", chatId, userId)
 
 		if err != nil {
-			fmt.Println("insert into chat_user")
+			fmt.Println("insert into chat_user main user")
 
 			return err
 		}
 
-		_, err = Chat.database.Exec("INSERT INTO newmessages (msg_id,u_id) VALUES($1,$2)", msgId, userChatId)
+		_, err = Chat.database.Exec("INSERT INTO newmessages (msg_id,u_id) VALUES($1,$2)", msgId, userId)
 
 		if err != nil {
-			fmt.Println("insert into nmsg")
+			fmt.Println("insert nm chat_user")
 
 			return err
 		}
-	}
-
-	_, err = Chat.database.Exec("INSERT INTO chat_user (ch_id,u_id) VALUES($1,$2)", chatId, userId)
-
-	if err != nil {
-		fmt.Println("insert into chat_user main user")
-
-		return err
-	}
-
-	_, err = Chat.database.Exec("INSERT INTO newmessages (msg_id,u_id) VALUES($1,$2)", msgId, userId)
-
-	if err != nil {
-		fmt.Println("insert nm chat_user")
-
-		return err
 	}
 
 	return nil
