@@ -78,11 +78,11 @@ export default class OnlineUsers extends React.Component {
 	onChange = (e) => {
 		console.log('show1');
 		if (e.target.checked) {
-			this.state.users.push(e.target.value);
+			this.state.users.push(parseInt(e.target.value));
 			console.log('show2');
 			console.log(this.state.users);
 		} else {
-			let index = this.state.users.indexOf(e.target.value);
+			let index = this.state.users.indexOf(parseInt(e.target.value));
 			if (index > -1) {
 				this.state.users.splice(index, 1);
 			}
@@ -108,7 +108,9 @@ export default class OnlineUsers extends React.Component {
 
 		try {
 			await API.post('/chats', { chatName, users });
+
 			const { history } = this.props;
+			history.push('/login');
 			history.push('/chats');
 		} catch (error) {
 			console.log('[DEBUG]: Ответ сервера на /chats');

@@ -3,6 +3,7 @@ import API from '../utils/API';
 
 import OnlineUsers from './OnlineUsers';
 import Chats from './Chats';
+import connectSocket from '../utils/Socket';
 
 export default class Messanger extends React.Component {
 	constructor(props) {
@@ -25,14 +26,20 @@ export default class Messanger extends React.Component {
 					<div className='col-md-6'>
 						<h4 className='h4 mt-2 text-left'>Ваши чаты</h4>
 						<hr />
-						<Chats chats={this.state.chats} />
+						<Chats
+							history={this.props.history}
+							chats={this.state.chats}
+						/>
 					</div>
 					<div className='col col-md-3 '>
 						<h4 className='h4 mt-2 text-left'>
 							Пользователи онлайн
 						</h4>
 						<hr />
-						<OnlineUsers online={this.state.online} />
+						<OnlineUsers
+							history={this.props.history}
+							online={this.state.online}
+						/>
 					</div>
 				</div>
 			</div>
@@ -42,6 +49,10 @@ export default class Messanger extends React.Component {
 	async componentDidMount() {
 		// Load async data.
 		try {
+			if (!window.socket) {
+				await connectSocket();
+			}
+
 			let mainData = await API.get('/chats', {
 				params: {
 					results: 1,
@@ -49,8 +60,10 @@ export default class Messanger extends React.Component {
 				},
 			}); // Парсим резульатты.
 
-			let chatsData = mainData.data.results[0].chats;
-			let onlineData = mainData.data.results[0].online; // Обновляем стейт и ререндерим наш компонент.
+			console.log(mainData);
+
+			let chatsData = mainData.data.chats;
+			let onlineData = mainData.data.online; // Обновляем стейт и ререндерим наш компонент.
 
 			this.setState({
 				...this.state,
@@ -62,6 +75,7 @@ export default class Messanger extends React.Component {
 			});
 		} catch (err) {
 			console.log('[DEBUG]: /chats error');
+			console.log(err);
 			const { history } = this.props;
 			history.push('/login');
 		}

@@ -138,8 +138,8 @@ class Register extends React.Component {
 				history.push('/chats');
 			} catch (error) {
 				console.log('[DEBUG]: Ответ сервера на /registration');
-				console.log(error.response);
-				this.setState({ err: error.response.status });
+				console.log(error);
+				this.setState({ err: error });
 				this.setState({
 					errText: 'Пользователь с таким login уже существует!',
 				});

@@ -95,6 +95,7 @@ class Login extends React.Component {
 		try {
 			await API.post('/login', { login, password });
 			const { history } = this.props;
+
 			history.push('/chats');
 		} catch (error) {
 			console.log('[DEBUG]: Ответ сервера на /login');
