@@ -6,15 +6,7 @@ import { Link, useParams } from 'react-router-dom';
 import Message from '../mixins/Message';
 import AddEmojie from '../mixins/addEmojie';
 
-import {
-	Popover,
-	PopoverBody,
-	PopoverHeader,
-	Button,
-	Modal,
-	ModalBody,
-	ModalHeader,
-} from 'shards-react';
+import { Popover, PopoverBody, PopoverHeader, Button } from 'shards-react';
 
 export default class Messages extends React.Component {
 	constructor(props) {
@@ -40,6 +32,8 @@ export default class Messages extends React.Component {
 	}
 
 	render() {
+		const { history } = this.props;
+
 		return (
 			<div
 				className='container-fluid flex-column align-items-center h-100 mt-2 d-flex justify-content-between'
@@ -65,7 +59,7 @@ export default class Messages extends React.Component {
 					className='w-75 d-flex justify-content-center position-fixed-bottom mx-auto'
 					style={{ minHeight: '80vh', marginBottom: '80px' }}>
 					<Message
-						history={this.props.history}
+						history={history}
 						messages={this.state.messages}></Message>
 				</div>
 
@@ -109,13 +103,15 @@ export default class Messages extends React.Component {
 								</PopoverHeader>
 								<PopoverBody>
 									<Emojie
-										history={this.props.history}
+										history={history}
 										chatId={this.state.chatId}
 										emojies={this.state.allEmojies}
 										func={this.insertEmojie}></Emojie>
 								</PopoverBody>
 							</Popover>
 							<AddEmojie
+								history={history}
+								chatId={this.state.chatId}
 								open={this.state.openAddEmojie}
 								closeAddSticker={
 									this.closeAddSticker
@@ -177,7 +173,6 @@ export default class Messages extends React.Component {
 	};
 
 	onChangeMessage = (e) => {
-		console.log(e.target.value);
 		this.setState({ textMessage: e.target.value });
 	};
 
@@ -187,12 +182,10 @@ export default class Messages extends React.Component {
 				txt: this.state.textMessage,
 				chatId: this.state.chatId,
 			});
-			window.socket.send(
-				JSON.stringify({
-					txt: this.state.textMessage,
-					chatId: this.state.chatId,
-				}),
-			);
+			window.socket.next({
+				txt: this.state.textMessage,
+				chatId: this.state.chatId,
+			});
 			var notes = this.refs.notes;
 			notes.value = '';
 			this.setState({ textMessage: '' });
@@ -206,27 +199,25 @@ export default class Messages extends React.Component {
 				await connectSocket();
 			}
 
-			// data: "{"event":"new message","message":{"author":"poi","txt":"sdga","chatName":"Snow","chatId":9,"emojies":null}}↵"
-			window.socket.onmessage = function (event) {
-				console.log('[WS] Message', event);
-				var data = JSON.parse(event.data);
-				console.log(data);
-				console.log(data.message);
-				if (data.message.chatId === this.state.chatId) {
-					let newMsg = {
-						author: data.message.author,
-						txt: data.message.txt,
-						chatName: data.message.chatName,
-						chatId: data.message.chatId,
-						emojies: data.message.emojies,
-					};
-
-					this.setState({
-						messages: [newMsg, ...this.state.messages],
-					});
-					console.log('[Add msg]');
-				}
-			}.bind(this);
+			window.socket.subscribe(
+				(val) => {
+					if (
+						window.location.pathname ===
+						`/chats/${this.state.chatId}`
+					) {
+						val = val.message;
+						if (val.chatId === this.state.chatId) {
+							this.setState({
+								messages: [val, ...this.state.messages],
+							});
+						}
+					}
+				},
+				(err) => {
+					return console.error('error:', err);
+				},
+				() => console.log('completed'),
+			);
 
 			let mainData = await API.get(`/chats/${this.state.chatId}`, {
 				params: {
@@ -235,14 +226,9 @@ export default class Messages extends React.Component {
 				},
 			}); // Парсим резульатты.
 
-			console.log(mainData);
-
 			let chatInfo = mainData.data.chatInfo;
 			let messages = mainData.data.messages;
 			let allEmojies = mainData.data.allEmojies; // Обновляем стейт и ререндерим наш компонент.
-
-			console.log('[DEBUG]: Chat answer');
-			console.log(mainData.data);
 			this.setState({
 				...this.state,
 				...{

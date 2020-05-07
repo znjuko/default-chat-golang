@@ -38,22 +38,18 @@ export default class Message extends React.Component {
 		// console.log(txtArr);
 		return (
 			<p>
-				{txtArr.map((element) => {
+				{txtArr.map((element, ind) => {
 					let res = [];
 					if (
 						element[0].startsWith(':') &&
 						element[element.length - 1].endsWith(':')
 					) {
-						console.log(element);
-
 						if (emojies) {
 							res = emojies.filter((el) => {
 								if (el.phrase === element) {
-									console.log(el);
 									return true;
 								}
 							});
-							console.log(res);
 						}
 					}
 
@@ -61,9 +57,9 @@ export default class Message extends React.Component {
 						element += ' ';
 						return element;
 					} else {
-						console.log(res[0].url);
 						return (
 							<img
+								key={ind}
 								style={{ maxWidth: '80px', maxHeight: '80px' }}
 								src={res[0].url}
 							/>

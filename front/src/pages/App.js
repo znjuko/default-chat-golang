@@ -29,28 +29,11 @@ class App extends React.Component {
 						path='/chats'
 						component={ChatsRout}
 					/>
-					<Redirect from='/' to='/login' />
+					<Redirect from='/' to='/chats' />
 				</Switch>
 			</div>
 		);
 	}
-	// Место для запроса на сервер
-	/* async componentDidMount() {
-		// Load async data.
-		let userData = await API.post('/login', {
-			params: {
-				results: 1,
-				inc: 'name,password',
-			},
-		});
-		// Parse results
-		userData = userData.data.results[0];
-
-		// Update state with new data.
-		const name = `${userData.name}`;
-
-		// Re-render our component.
-	} */
 }
 
 export default withRouter(App);

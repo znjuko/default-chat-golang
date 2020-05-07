@@ -94,7 +94,7 @@ export default class AddEmojie extends React.Component {
 				this.props.closeAddSticker();
 
 				const { history } = this.props;
-				history.push(`/chats`);
+				history.push(`/login`);
 				history.push(`/chats/${this.props.chatId}`);
 			} catch (error) {
 				console.log('[DEBUG]: Ответ сервера на /login');

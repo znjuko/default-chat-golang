@@ -9,7 +9,10 @@ export default class Chats extends React.Component {
 			<div className='d-flex mt-2 flex-column'>
 				{this.props.chats.map((chat, index) => {
 					return (
-						<Link to={`/chats/${chat.chatId}`} key={chat.chatId}>
+						<Link
+							to={`/chats/${chat.chatId}`}
+							key={chat.chatId}
+							style={{ textDecoration: 'none' }}>
 							<Card className='d-flex flex-column p-3 mx-auto m-1 w-100'>
 								<h4 className='h4 text-uppercase d-flex mb-0 text-decoration-none'>
 									{chat.chatName}
