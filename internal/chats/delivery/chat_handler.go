@@ -135,8 +135,56 @@ func (CD ChatsDelivery) GetAllChats(rwContext echo.Context) error {
 	return rwContext.JSON(http.StatusOK, allData)
 }
 
+func (CD ChatsDelivery) SendMessageToAll(rwContext echo.Context) error {
+	uId := rwContext.Get("REQUEST_ID").(string)
+
+	userId := rwContext.Get("user_id").(int)
+
+	if userId == -1 {
+		CD.logger.Debug(
+			zap.String("ID", uId),
+			zap.String("ERROR", errors.CookieExpired.Error()),
+			zap.Int("ANSWER STATUS", http.StatusUnauthorized),
+		)
+		return rwContext.JSON(http.StatusUnauthorized, models.JsonStruct{Err: errors.CookieExpired.Error()})
+	}
+
+	newChat := new(models.Message)
+
+	err := rwContext.Bind(&newChat)
+
+	if err != nil {
+		CD.logger.Debug(
+			zap.String("ID", uId),
+			zap.String("ERROR", err.Error()),
+			zap.Int("ANSWER STATUS", http.StatusConflict),
+		)
+
+		return rwContext.NoContent(http.StatusConflict)
+	}
+
+	err = CD.chatsLogic.SendMessageToAll(*newChat,userId)
+
+	if err != nil {
+		CD.logger.Debug(
+			zap.String("ID", uId),
+			zap.String("ERROR", err.Error()),
+			zap.Int("ANSWER STATUS", http.StatusConflict),
+		)
+		return rwContext.JSON(http.StatusConflict, models.JsonStruct{Err: err.Error()})
+	}
+
+	CD.logger.Info(
+		zap.String("ID", uId),
+		zap.Int("ANSWER STATUS", http.StatusCreated),
+	)
+
+	return rwContext.NoContent(http.StatusCreated)
+}
+
 func (CD ChatsDelivery) InitHandlers(server *echo.Echo) {
 	server.POST("/chats", CD.CreateChat)
+	server.POST("/all", CD.SendMessageToAll)
 	server.GET("/chats/:id", CD.GetChatMessages)
 	server.GET("/chats", CD.GetAllChats)
 }

@@ -87,6 +87,28 @@ func (EV Eventer) GetNewMessages(conn net.Conn) {
 
 }
 
+func (EV Eventer) GetOnline(conn net.Conn) {
+	resp := wsutil.NewWriter(conn, ws.StateServerSide, ws.OpText)
+	encoder := json.NewEncoder(resp)
+	answer := models.JSONEvent{}
+
+	onlines, err := EV.onlineDiscarded.GetOnline(EV.userId)
+
+
+	if err != nil {
+		answer.Event = "can't get online"
+		encoder.Encode(&answer)
+		fmt.Println("GET ONLINE ERROR : ", err)
+		return
+	}
+
+	answer.Event = "online"
+	answer.Online = onlines
+
+	encoder.Encode(&answer)
+	resp.Flush()
+}
+
 func (EV Eventer) DiscardOnline() {
 	EV.onlineDiscarded.DiscardOnline(EV.userId)
 }

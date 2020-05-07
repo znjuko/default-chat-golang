@@ -53,3 +53,7 @@ func (Chat ChatUseCaseRealisation) GetChat(chatId int) (models.ChatAndMsgs, erro
 
 	return *chAndMsg, err
 }
+
+func (Chat ChatUseCaseRealisation) SendMessageToAll(msg models.Message, userId int) error {
+	return Chat.SendMessageToAll(msg,userId)
+}

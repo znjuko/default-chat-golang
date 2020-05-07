@@ -7,4 +7,5 @@ type ChatRepo interface {
 	GetChats(int) ([]models.Chat, error)
 	CreateChat(string, []int) error
 	GetChat(int) (models.Chat, []models.Message, error)
+	SendMessageToAll(models.Message,int) error
 }

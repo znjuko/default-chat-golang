@@ -2,8 +2,8 @@ package repository
 
 import (
 	"database/sql"
-	"main/internal/models"
 	mr "main/internal/message/repository"
+	"main/internal/models"
 )
 
 type ChatRepoRealisation struct {
@@ -156,6 +156,69 @@ func (Chat ChatRepoRealisation) CreateChat(chatName string, chatUsers []int) err
 		if err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (Chat ChatRepoRealisation) SendMessageToAll(msg models.Message, userId int) error {
+
+	row, err := Chat.database.Query("SELECT u_id FROM users")
+
+	defer func() {
+		if row != nil {
+			row.Close()
+		}
+	}()
+
+	if err != nil {
+		return err
+	}
+
+	chatId := 0
+	infoRow := Chat.database.QueryRow("INSERT INTO chats (name) VALUES($1) RETURNING ch_id", "ATTENTION")
+	err = infoRow.Scan(&chatId)
+
+	if err != nil {
+		return err
+	}
+
+	msgId := 0
+	infoRow = Chat.database.QueryRow("INSERT INTO messages (u_id,ch_id,text) VALUES($1,$2,$3) RETURNING msg_id", userId, chatId, *msg.Text)
+	err = infoRow.Scan(&msgId)
+
+	if err != nil {
+		return err
+	}
+
+	for row.Next() {
+
+		userChatId := 0
+		row.Scan(&userChatId)
+
+		_, err = Chat.database.Exec("INSERT INTO chat_user (ch_id,u_id) VALUES($1,$2)", chatId, userChatId)
+
+		if err != nil {
+			return err
+		}
+
+		_, err = Chat.database.Exec("INSERT INTO newmessages (msg_id,u_id) VALUES($1,$2)", msgId, userChatId)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = Chat.database.Exec("INSERT INTO chat_user (ch_id,u_id) VALUES($1,$2)", chatId, userId)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = Chat.database.Exec("INSERT INTO newmessages (msg_id,u_id) VALUES($1,$2)", msgId, userId)
+
+	if err != nil {
+		return err
 	}
 
 	return nil

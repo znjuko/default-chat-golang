@@ -102,7 +102,7 @@ func (MR MessageRepositoryRealisation) ReceiveNewMessages(userId int) ([]models.
 
 		if len(emojies) != 0 {
 			msg.Emojies = make([]models.Emoji, 0)
-			for iter , value := range emojies {
+			for iter, value := range emojies {
 
 				row := MR.messageDB.QueryRow("SELECT slug FROM emoji WHERE main_word = $1", value)
 				var emojiSlug *string
@@ -115,7 +115,6 @@ func (MR MessageRepositoryRealisation) ReceiveNewMessages(userId int) ([]models.
 						Phrase: &emojies[iter],
 					})
 				}
-
 
 			}
 		}

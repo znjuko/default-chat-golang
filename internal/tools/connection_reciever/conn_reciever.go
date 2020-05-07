@@ -51,19 +51,31 @@ func (CR ConnReceiver) StartRecieving() {
 		})
 
 		go func() {
+
+			counter := 0
+
 			for {
 
 				if val := atomic.SwapInt32(&CR.closedStatus, 0); val == 1 {
 					fmt.Println("Status closed")
 					return
 				}
-				CR.workPool.Schedule(func() {
-					CR.handler.GetNewMessages(CR.connection)
-				})
+
+				counter++
+
+				if counter % 10 == 0 {
+					CR.workPool.Schedule(func() {
+						CR.handler.GetNewMessages(CR.connection)
+						CR.handler.GetOnline(CR.connection)
+					})
+				} else {
+					CR.workPool.Schedule(func() {
+						CR.handler.GetNewMessages(CR.connection)
+					})
+				}
 
 				time.Sleep(1 * time.Second)
 			}
-
 		}()
 
 	}()
