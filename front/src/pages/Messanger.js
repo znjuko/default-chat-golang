@@ -22,7 +22,7 @@ export default class Messanger extends React.Component {
 			chats: [],
 			online: [],
 			open: false,
-			mainText: '',
+			txt: '',
 		};
 	}
 
@@ -98,13 +98,13 @@ export default class Messanger extends React.Component {
 	}
 
 	handleChange = (e) => {
-		this.setState({ mainText: e.target.value });
+		this.setState({ txt: e.target.value });
 	};
 	handleSubmit = async (e) => {
 		e.preventDefault();
-		const { mainText } = this.state;
+		const { txt } = this.state;
 		try {
-			await API.post('/all', { mainText });
+			await API.post('/all', { txt });
 			this.setState({ open: false });
 		} catch (err) {
 			console.log('[DEBUG]: error while all');
