@@ -43,13 +43,11 @@ func (EV Eventer) WriteNewMessage(conn net.Conn) {
 	msg := new(models.Message)
 
 	if err = decoder.Decode(&msg); err != nil {
-
 		fmt.Println("DECODE JSON ERROR : ", err)
 		return
 	}
 
 	if err := EV.messageDB.AddNewMessage(EV.userId, *msg); err != nil {
-
 		fmt.Println("ADD NEW MESSAGES ERROR : ", err)
 		return
 	}

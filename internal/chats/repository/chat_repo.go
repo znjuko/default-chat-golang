@@ -15,7 +15,7 @@ func NewChatRepoRealistaion(db *sql.DB) ChatRepoRealisation {
 
 func (Chat ChatRepoRealisation) GetOnline(userId int) ([]models.OnlineUsers, error) {
 
-	row, err := Chat.database.Query("SELECT U.u_id , U.login FROM users U INNER JOIN online O ON (O.u_id=U.u_id) WHERE U.u_id != $2", userId)
+	row, err := Chat.database.Query("SELECT U.u_id , U.login FROM users U INNER JOIN online O ON (O.u_id=U.u_id) WHERE U.u_id != $1", userId)
 
 	defer func() {
 		if row != nil {
@@ -45,14 +45,14 @@ func (Chat ChatRepoRealisation) GetOnline(userId int) ([]models.OnlineUsers, err
 
 }
 
-func (Chat ChatRepoRealisation) GetChat(chatId int) (models.Chat, []models.Message, error) {
+func (Chat ChatRepoRealisation) GetChat(chatId int) (models.Chat, []models.Message, []models.Emoji, error) {
 
 	chat := new(models.Chat)
 	row := Chat.database.QueryRow("SELECT name FROM chats WHERE ch_id = $1", chatId)
 	err := row.Scan(&chat.ChatName)
 
 	if err != nil {
-		return *chat, nil, err
+		return *chat, nil, nil, err
 	}
 
 	rows, err := Chat.database.Query("SELECT M.msg_id , M.text , U.login FROM messages M INNER JOIN users U ON(M.u_id=U.u_id) WHERE M.ch_id = $1 ORDER BY M.msg_id DESC", chatId)
@@ -64,7 +64,7 @@ func (Chat ChatRepoRealisation) GetChat(chatId int) (models.Chat, []models.Messa
 	}()
 
 	if err != nil {
-		return *chat, nil, err
+		return *chat, nil, nil, err
 	}
 
 	msgs := make([]models.Message, 0)
@@ -72,16 +72,38 @@ func (Chat ChatRepoRealisation) GetChat(chatId int) (models.Chat, []models.Messa
 	for rows.Next() {
 		msg := new(models.Message)
 		var msgid *int
-		err = rows.Scan(&msgid, &msg.Text, msg.AuthorLogin)
+		err = rows.Scan(&msgid, &msg.Text, &msg.AuthorLogin)
 
 		if err != nil {
-			return *chat, nil, err
+			return *chat, nil, nil, err
 		}
 
 		msgs = append(msgs, *msg)
 	}
 
-	return *chat, msgs, nil
+	emRows, err := Chat.database.Query("SELECT main_word , slug FROM emoji")
+
+	defer func() {
+		if emRows != nil {
+			emRows.Close()
+		}
+	}()
+
+	emjs := make([]models.Emoji, 0)
+
+	for emRows.Next() {
+		emj := new(models.Emoji)
+		err = emRows.Scan(&emj.Phrase, &emj.Url)
+
+		if err != nil {
+			return *chat, nil, nil, err
+		}
+
+		emjs = append(emjs, *emj)
+
+	}
+
+	return *chat, msgs, emjs, nil
 
 }
 
@@ -104,7 +126,7 @@ func (Chat ChatRepoRealisation) GetChats(userId int) ([]models.Chat, error) {
 		chat := new(models.Chat)
 		msgId := 0
 
-		err = row.Scan(&chat.ChatId,&chat.ChatName, &msgId, &chat.ChatLastAuthorLogin, &chat.ChatLastMessage)
+		err = row.Scan(&chat.ChatId, &chat.ChatName, &msgId, &chat.ChatLastAuthorLogin, &chat.ChatLastMessage)
 
 		if err != nil {
 			return nil, err

@@ -41,7 +41,7 @@ func (Chat ChatUseCaseRealisation) GetChatsAndOnlineUsers(userId int) (models.Ch
 func (Chat ChatUseCaseRealisation) GetChat(chatId int) (models.ChatAndMsgs , error) {
 	chAndMsg := new(models.ChatAndMsgs)
 	var err error
-	chAndMsg.ChatInfo , chAndMsg.Messages , err = Chat.chatDB.GetChat(chatId)
+	chAndMsg.ChatInfo , chAndMsg.Messages , chAndMsg.AllEmojies ,err = Chat.chatDB.GetChat(chatId)
 
 	return *chAndMsg , err
 }

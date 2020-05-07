@@ -34,7 +34,7 @@ func MessageParser(messageTxt string) []string {
 func (MR MessageRepositoryRealisation) AddNewMessage(author int, message models.Message) error {
 
 	msgId := 0
-	row := MR.messageDB.QueryRow("INSERT INTO messages (u_id,ch_id,text) VALUES($1,$2,$3)", author , *message.ChatId , *message.Text)
+	row := MR.messageDB.QueryRow("INSERT INTO messages (u_id,ch_id,text) VALUES($1,$2,$3) RETURNING msg_id", author , message.ChatId , *message.Text)
 	err := row.Scan(&msgId)
 	if err != nil {
 		return err
@@ -47,10 +47,9 @@ func (MR MessageRepositoryRealisation) AddNewMessage(author int, message models.
 		return err
 	}
 
-	MR.messageDB.Exec("UPDATE chats SET last_msg_id = $1 , last_msg_log = $2 , last_msg_txt = $3 WHERE ch_id = $4", msgId , *usrLogin , *message.Text , *message.ChatId)
+	MR.messageDB.Exec("UPDATE chats SET last_msg_id = $1 , last_msg_log = $2 , last_msg_txt = $3 WHERE ch_id = $4", msgId , *usrLogin , *message.Text , message.ChatId)
 
-
-	recRows, err := MR.messageDB.Query("SELECT u_id FROM chat_users WHERE ch_id = $1", *message.ChatId)
+	recRows, err := MR.messageDB.Query("SELECT u_id FROM chat_user WHERE ch_id = $1", message.ChatId)
 	defer func() {
 		if recRows != nil {
 			recRows.Close()
