@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	mr "main/internal/message/repository"
 	"main/internal/models"
 )
@@ -162,6 +163,10 @@ func (Chat ChatRepoRealisation) CreateChat(chatName string, chatUsers []int) err
 }
 
 func (Chat ChatRepoRealisation) SendMessageToAll(msg models.Message, userId int) error {
+
+
+
+	fmt.Println("HERE")
 
 	row, err := Chat.database.Query("SELECT u_id FROM users")
 
