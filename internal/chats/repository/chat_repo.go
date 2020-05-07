@@ -83,7 +83,7 @@ func (Chat ChatRepoRealisation) GetChat(chatId int) (models.Chat, []models.Messa
 
 		if len(emojies) != 0 {
 			msg.Emojies = make([]models.Emoji, 0)
-			for _, value := range emojies {
+			for iter, value := range emojies {
 
 				row := Chat.database.QueryRow("SELECT slug FROM emoji WHERE main_word = $1", value)
 				var emojiSlug *string
@@ -93,7 +93,7 @@ func (Chat ChatRepoRealisation) GetChat(chatId int) (models.Chat, []models.Messa
 				if err == nil {
 					msg.Emojies = append(msg.Emojies, models.Emoji{
 						Url:    emojiSlug,
-						Phrase: &value,
+						Phrase: &emojies[iter],
 					})
 				}
 

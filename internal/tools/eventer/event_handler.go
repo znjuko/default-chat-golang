@@ -75,6 +75,12 @@ func (EV Eventer) GetNewMessages(conn net.Conn) {
 
 	for iter, _ := range messages {
 		answer.Message = messages[iter]
+
+		for i , _ := range answer.Message.Emojies {
+			fmt.Println("sended emojies : ")
+			fmt.Println(*answer.Message.Emojies[i].Phrase)
+		}
+
 		encoder.Encode(&answer)
 		resp.Flush()
 	}
