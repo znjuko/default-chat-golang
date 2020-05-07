@@ -45,14 +45,14 @@ func (Chat ChatRepoRealisation) GetOnline(userId int) ([]models.OnlineUsers, err
 
 }
 
-func (Chat ChatRepoRealisation) GetChat(chatId int) (models.Chat, []models.Message, []models.Emoji, error) {
+func (Chat ChatRepoRealisation) GetChat(chatId int) (models.Chat, []models.Message, error) {
 
 	chat := new(models.Chat)
 	row := Chat.database.QueryRow("SELECT name FROM chats WHERE ch_id = $1", chatId)
 	err := row.Scan(&chat.ChatName)
 
 	if err != nil {
-		return *chat, nil, nil, err
+		return *chat, nil, err
 	}
 
 	rows, err := Chat.database.Query("SELECT M.msg_id , M.text , U.login FROM messages M INNER JOIN users U ON(M.u_id=U.u_id) WHERE M.ch_id = $1 ORDER BY M.msg_id DESC", chatId)
@@ -64,7 +64,7 @@ func (Chat ChatRepoRealisation) GetChat(chatId int) (models.Chat, []models.Messa
 	}()
 
 	if err != nil {
-		return *chat, nil, nil, err
+		return *chat, nil, err
 	}
 
 	msgs := make([]models.Message, 0)
@@ -75,35 +75,13 @@ func (Chat ChatRepoRealisation) GetChat(chatId int) (models.Chat, []models.Messa
 		err = rows.Scan(&msgid, &msg.Text, &msg.AuthorLogin)
 
 		if err != nil {
-			return *chat, nil, nil, err
+			return *chat, nil, err
 		}
 
 		msgs = append(msgs, *msg)
 	}
 
-	emRows, err := Chat.database.Query("SELECT main_word , slug FROM emoji")
-
-	defer func() {
-		if emRows != nil {
-			emRows.Close()
-		}
-	}()
-
-	emjs := make([]models.Emoji, 0)
-
-	for emRows.Next() {
-		emj := new(models.Emoji)
-		err = emRows.Scan(&emj.Phrase, &emj.Url)
-
-		if err != nil {
-			return *chat, nil, nil, err
-		}
-
-		emjs = append(emjs, *emj)
-
-	}
-
-	return *chat, msgs, emjs, nil
+	return *chat, msgs, nil
 
 }
 

@@ -5,7 +5,7 @@ import (
 	"main/internal/models"
 )
 
-type EmojiUseRealisation struct{
+type EmojiUseRealisation struct {
 	emojiDB emojies.EmojiRepo
 }
 

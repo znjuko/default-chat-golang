@@ -1,6 +1,5 @@
 package models
 
-type JsonStruct struct
-{
+type JsonStruct struct {
 	Err string `json:"error"`
 }

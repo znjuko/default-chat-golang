@@ -9,5 +9,4 @@ type MessageRepository interface {
 	AddNewMessage(int, models.Message) error
 	// get new messages , return array of new messages
 	ReceiveNewMessages(int) ([]models.Message, error)
-
 }

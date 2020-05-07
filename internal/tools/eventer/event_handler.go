@@ -7,17 +7,17 @@ import (
 	"github.com/gobwas/ws/wsutil"
 	"main/internal/message"
 	"main/internal/models"
-	"net"
 	"main/internal/socket"
+	"net"
 )
 
 type Eventer struct {
-	userId    int
-	messageDB message.MessageRepository
+	userId          int
+	messageDB       message.MessageRepository
 	onlineDiscarded socket.OnlineRepo
 }
 
-func NewEventer(user int, messages message.MessageRepository , online socket.OnlineRepo) Eventer {
+func NewEventer(user int, messages message.MessageRepository, online socket.OnlineRepo) Eventer {
 	return Eventer{userId: user, messageDB: messages, onlineDiscarded: online}
 }
 
@@ -80,7 +80,6 @@ func (EV Eventer) GetNewMessages(conn net.Conn) {
 	}
 
 }
-
 
 func (EV Eventer) DiscardOnline() {
 	EV.onlineDiscarded.DiscardOnline(EV.userId)

@@ -14,8 +14,6 @@ type UserDeliveryRealisation struct {
 	logger    *zap.SugaredLogger
 }
 
-
-
 func (userD UserDeliveryRealisation) Login(rwContext echo.Context) error {
 
 	uId := rwContext.Get("REQUEST_ID").(string)
@@ -33,8 +31,6 @@ func (userD UserDeliveryRealisation) Login(rwContext echo.Context) error {
 
 		return rwContext.NoContent(http.StatusConflict)
 	}
-
-
 
 	cookieValue, err := userD.userLogic.Login(*userAuthData)
 
@@ -143,7 +139,6 @@ func (userD UserDeliveryRealisation) Register(rwContext echo.Context) error {
 
 	return rwContext.NoContent(http.StatusOK)
 }
-
 
 func NewUserDelivery(log *zap.SugaredLogger, userRealisation users.UserUseCase) UserDeliveryRealisation {
 	return UserDeliveryRealisation{userLogic: userRealisation, logger: log}

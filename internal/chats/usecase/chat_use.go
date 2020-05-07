@@ -2,15 +2,17 @@ package usecase
 
 import (
 	"main/internal/chats"
+	"main/internal/emojies"
 	"main/internal/models"
 )
 
 type ChatUseCaseRealisation struct {
-	chatDB chats.ChatRepo
+	emojiDB emojies.EmojiRepo
+	chatDB  chats.ChatRepo
 }
 
-func NewChatUseCaseRealisation(chat chats.ChatRepo) ChatUseCaseRealisation {
-	return ChatUseCaseRealisation{chatDB: chat}
+func NewChatUseCaseRealisation(chat chats.ChatRepo, emoji emojies.EmojiRepo) ChatUseCaseRealisation {
+	return ChatUseCaseRealisation{chatDB: chat, emojiDB: emoji}
 }
 
 func (Chat ChatUseCaseRealisation) CreateChat(chat models.NewChatUsers, userId int) error {
@@ -38,10 +40,16 @@ func (Chat ChatUseCaseRealisation) GetChatsAndOnlineUsers(userId int) (models.Ch
 
 }
 
-func (Chat ChatUseCaseRealisation) GetChat(chatId int) (models.ChatAndMsgs , error) {
+func (Chat ChatUseCaseRealisation) GetChat(chatId int) (models.ChatAndMsgs, error) {
 	chAndMsg := new(models.ChatAndMsgs)
 	var err error
-	chAndMsg.ChatInfo , chAndMsg.Messages , chAndMsg.AllEmojies ,err = Chat.chatDB.GetChat(chatId)
+	chAndMsg.ChatInfo, chAndMsg.Messages, err = Chat.chatDB.GetChat(chatId)
 
-	return *chAndMsg , err
+	if err != nil {
+		return models.ChatAndMsgs{}, err
+	}
+
+	chAndMsg.AllEmojies, err = Chat.emojiDB.GetAllEmojies()
+
+	return *chAndMsg, err
 }
